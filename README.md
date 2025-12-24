@@ -1,16 +1,55 @@
-# React + Vite
+# 🎓 IIIT Kota 
+A high-performance, responsive web portal designed for students of the **Indian Institute of Information Technology, Kota**.  
+This application streamlines the academic tracking process by providing **accurate SGPA (Semester Grade Point Average) calculations** based on the official institute ordinance.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## ✨ Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Institutional Accuracy**  
+  Pre-configured with official course credits for **CSE** and **IT** branches.
 
-## React Compiler
+- **Glassmorphism Design**  
+  Futuristic *Space-Tech* UI using backdrop blurs, gradients, and purple/indigo glows.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Mobile-Optimized UX**  
+  Professionally designed navigation and inputs that scale from mobile devices to 4K desktops.
 
-## Expanding the ESLint configuration
+- **Reactive Calculation Engine**  
+  Real-time SGPA updates without page reloads using React state management.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Smooth Transitions**  
+  Fluid page animations powered by **Framer Motion (AnimatePresence)**.
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology | Usage |
+|--------|-----------|-------|
+| **Framework** | React.js (Vite) | High-speed UI rendering |
+| **Styling** | Tailwind CSS v4 | Utility-first styling with glassmorphism |
+| **Animations** | Framer Motion | Page transitions and interactions |
+| **Icons** | Lucide React | Clean SVG icon set |
+| **Routing** | React Router v6 | Client-side routing |
+
+---
+
+## 🏛️ Project Architecture
+
+```text
+src/
+├── assets/                  # Institute logos and static assets
+├── components/              # Reusable UI components
+│   ├── Navbar.jsx           # Responsive navbar with mobile drawer
+│   ├── Footer.jsx           # Institutional footer
+│   ├── Home.jsx             # Landing page & features
+│   ├── SgpaCalculator.jsx   # Core SGPA calculation logic
+│   └── Stepper.jsx          # Step-based progress tracker
+├── data/
+│   └── SgpaData.js          # Subjects, codes, and credit structure
+├── utils/
+│   └── gradeMap.js          # Letter grade to grade-point mapping
+├── App.jsx                  # Route definitions & transitions
+└── index.css                # Global styles & Tailwind configuration
+📥 Getting Started

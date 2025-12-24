@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+@theme {
+  /* Custom IIIT Kota Colors */
+  --color-brand-dark: #030211;
+  --color-brand-card: rgba(11, 15, 47, 0.8);
+  --color-brand-accent: #a855f7;
+  
+  /* Custom Shadows/Glows */
+  --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.4);
+  
+  /* Animations */
+  --animate-float: float 3s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+/* Custom Utility for Glassmorphism */
+@utility glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
