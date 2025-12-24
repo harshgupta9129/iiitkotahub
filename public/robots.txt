@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://iiitkota.vercel.app/sitemap.xml

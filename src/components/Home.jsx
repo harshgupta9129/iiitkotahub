@@ -7,7 +7,6 @@ import {
   Zap, 
   ArrowRight, 
   GraduationCap, 
-  Github,
   Award
 } from 'lucide-react';
 
@@ -28,7 +27,10 @@ const Home = () => {
 
   return (
     <div className="relative pb-20">
-      
+      {/* React 19 Native SEO Tags */}
+      <title>IIIT KOTA HUB | Student Resources & SGPA Tool</title>
+      <meta name="description" content="Welcome to IIIT KOTA HUB. Access the official SGPA calculator, academic resources, and student tools for CSE and IT branches." />
+
       {/* --- HERO SECTION --- */}
       <section className="relative pt-10 md:pt-20 pb-16 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -50,8 +52,8 @@ const Home = () => {
             </h1>
 
             <p className="max-w-2xl mx-auto text-gray-400 text-lg md:text-xl mb-10 leading-relaxed">
-              The official SGPA calculator designed specifically for the students of 
-              IIIT Kota. Fast, accurate, and aligned with the latest grading ordinance.
+              Welcome to the IIIT KOTA HUB. Access the specialized SGPA calculator designed for students, 
+              perfectly aligned with the latest academic grading ordinance.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -92,9 +94,9 @@ const Home = () => {
             <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
               <ShieldCheck size={24} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Official Ordinance</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Academic Ordinance</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Calculations are based strictly on the IIIT Kota credit system and grading policy, ensuring 100% accuracy for your records.
+              Calculations are based strictly on the IIIT Kota credit system and grading policy, ensuring precision for your academic records.
             </p>
           </motion.div>
 
@@ -105,7 +107,7 @@ const Home = () => {
             </div>
             <h3 className="text-xl font-bold text-white mb-3">All Branches</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Full support for Computer Science and Information Technology branches across all semesters and electives.
+              Integrated support for Computer Science and Information Technology branches across all semesters and electives.
             </p>
           </motion.div>
 
@@ -116,7 +118,7 @@ const Home = () => {
             </div>
             <h3 className="text-xl font-bold text-white mb-3">Instant Results</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              No page reloads. Enter your grades and see your results instantly with our optimized reactive engine.
+              Experience seamless calculation. Enter your grades and view your results instantly with our high-performance engine.
             </p>
           </motion.div>
         </motion.div>
@@ -128,7 +130,7 @@ const Home = () => {
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
             <div className="max-w-md">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Empowering IIITians to aim higher.</h2>
-              <p className="text-gray-400 mb-8">Tracking your progress is the first step toward academic mastery. Join hundreds of students using the portal daily.</p>
+              <p className="text-gray-400 mb-8">Tracking your progress is the first step toward academic mastery. The HUB is built to support your daily academic needs.</p>
               <div className="flex gap-4 justify-center md:justify-start">
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-white">8+</span>

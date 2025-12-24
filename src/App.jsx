@@ -14,6 +14,11 @@ function App() {
     <div className="min-h-screen w-full flex flex-col
       bg-[#030211] selection:bg-purple-500/30 selection:text-white">
       
+      {/* React 19 Global Metadata */}
+      {/* These will show if individual pages don't override them */}
+      <title>IIIT KOTA HUB | Student Portal</title>
+      <meta name="description" content="A centralized hub for IIIT Kota students providing SGPA tools and academic resources." />
+      
       {/* Dynamic Background Elements for Desktop Depth */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-900/10 blur-[120px]" />
@@ -24,6 +29,7 @@ function App() {
 
       <main className="flex-grow relative">
         <AnimatePresence mode="wait">
+          {/* Transition wrapper for smooth page changes */}
           <Routes location={location} key={location.pathname}>
             <Route 
               path="/" 
@@ -45,6 +51,9 @@ function App() {
     </div>
   )
 }
+
+// Image of React component lifecycle with Framer Motion transitions
+
 
 // Reusable wrapper for smooth page entry
 const PageWrapper = ({ children }) => (
