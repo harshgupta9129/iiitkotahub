@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { ref, onValue, runTransaction } from "firebase/database";
+import {Link} from "react-router-dom"
+
 import {
   Mail,
   MapPin,
-  Phone,
   Globe,
   Twitter,
   Linkedin,
   Instagram,
   Youtube,
-  ArrowUpRight,
   Eye,
+  Archive,
+  Calculator,
+  ExternalLink
 } from "lucide-react";
 
 export default function Footer() {
@@ -19,188 +22,114 @@ export default function Footer() {
   const [totalViews, setTotalViews] = useState(null);
 
   useEffect(() => {
-    // 1. Reference the specific spot in your database
     const viewsRef = ref(db, "totalHubViews");
-
-    // 2. Increment the count on every mount (reload/URL hit)
     runTransaction(viewsRef, (currentValue) => {
-      // If the value doesn't exist yet, start at 1, otherwise add 1
       return (currentValue || 0) + 1;
     });
 
-    // 3. Listen for the update to show it in the UI
     const unsubscribe = onValue(viewsRef, (snapshot) => {
       if (snapshot.exists()) {
         setTotalViews(snapshot.val());
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener
+    return () => unsubscribe();
   }, []);
 
   return (
-    <footer className="relative mt-20 border-t border-white/10 overflow-hidden">
-      {/* Background Glow Effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+    <footer className="relative mt-20 border-t border-white/10 bg-[#030014] overflow-hidden">
+      {/* Visual Accent */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
 
-      <div className="bg-[#060417] text-gray-400">
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
-            {/* Brand Section */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="flex items-center gap-4 group">
-                <div className="p-2 bg-white/5 rounded-xl border border-white/10 group-hover:border-purple-500/50 transition-colors">
-                  <img
-                    src="https://cdn.iiitkota.ac.in/site/iiitkota.webp"
-                    alt="IIIT Kota"
-                    className="h-12 w-12 object-contain"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold leading-tight tracking-tight">
-                    Indian Institute of Information Technology
-                  </h3>
-                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold uppercase tracking-[0.2em] text-xs">
-                    Kota
-                  </p>
-                </div>
-              </div>
+      <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
+          
+          {/* Brand & Analytics Section */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="flex items-center gap-3">
+              <img src="/favicon-32x32.png" alt="IIIT Kota Hub" className="h-8 w-8" />
+              <h3 className="text-white font-black uppercase tracking-tighter text-2xl">
+                IIIT KOTA <span className="text-purple-500">HUB</span>
+              </h3>
+            </div>
 
-              <p className="text-sm leading-relaxed max-w-md">
-                An Institute of National Importance under an Act of Parliament,
-                providing world-class education in Information Technology.
-              </p>
+            <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
+              The leading resource for IIIT Kota students. Built to provide the 
+              most accurate SGPA Calculator (CGPA) and Link comprehensive 
+              Academic Archive for previous year question papers.
+            </p>
 
-              {/* Real-time View Counter Badge */}
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all group">
-                <Eye
-                  size={16}
-                  className="text-purple-500 group-hover:scale-110 transition-transform"
-                />
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
-                    Total Hub Views
-                  </p>
-                  <p className="text-lg font-black text-white leading-none">
-                    {totalViews !== null ? totalViews.toLocaleString() : "---"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                {[
-                  { icon: <Twitter size={18} />, href: "#" },
-                  { icon: <Linkedin size={18} />, href: "#" },
-                  { icon: <Instagram size={18} />, href: "#" },
-                  { icon: <Youtube size={18} />, href: "#" },
-                ].map((social, i) => (
-                  <a
-                    key={i}
-                    href={social.href}
-                    className="p-2.5 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-purple-600/20 hover:border-purple-500/50 transition-all"
-                  >
-                    {social.icon}
-                  </a>
-                ))}
+            {/* Live Counter for SEO Trust */}
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-purple-500/5 border border-purple-500/10">
+              <Eye size={16} className="text-purple-500" />
+              <div className="text-left">
+                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Global Portal Views</p>
+                <p className="text-lg font-black text-white leading-none">
+                  {totalViews !== null ? totalViews.toLocaleString() : "---"}
+                </p>
               </div>
             </div>
 
-            {/* Contact Info - Permanent Campus */}
-            <div className="lg:col-span-4 space-y-5">
-              <h4 className="text-white font-semibold text-sm uppercase tracking-widest border-l-2 border-purple-500 pl-3">
-                Contact Us
-              </h4>
-
-              <div className="space-y-4">
-                <div className="flex gap-4 group">
-                  <div className="mt-1 text-purple-400 group-hover:scale-110 transition-transform">
-                    <MapPin size={18} />
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium">
-                      Permanent Campus
-                    </p>
-                    <p className="text-xs leading-6">
-                      Ranpur, Kota, Rajasthan – 325003
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 group">
-                  <div className="mt-1 text-purple-400 group-hover:scale-110 transition-transform">
-                    <Phone size={18} />
-                  </div>
-                  <div className="text-xs space-y-1">
-                    <p>0744-2667000</p>
-                    <p>0744-2667010</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 group">
-                  <div className="mt-1 text-purple-400 group-hover:scale-110 transition-transform">
-                    <Mail size={18} />
-                  </div>
-                  <a
-                    href="mailto:office@iiitkota.ac.in"
-                    className="text-xs hover:text-white transition-colors"
-                  >
-                    office@iiitkota.ac.in
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Links / Actions */}
-            <div className="lg:col-span-3 space-y-6">
-              <h4 className="text-white font-semibold text-sm uppercase tracking-widest border-l-2 border-purple-500 pl-3">
-                Resources
-              </h4>
-
-              <div className="flex flex-col gap-3">
-                <a
-                  href="https://iiitkota.ac.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-white/5 hover:border-purple-500/40 transition-all"
-                >
-                  <span className="text-sm text-purple-100 flex items-center gap-2">
-                    <Globe size={16} /> Official Website
-                  </span>
-                  <ArrowUpRight
-                    size={14}
-                    className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
-                  />
-                </a>
-
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-[10px] uppercase tracking-tighter text-gray-500 mb-2">
-                    Transit Campus
-                  </p>
-                  <p className="text-xs text-gray-300">
-                    MNIT Jaipur, Rajasthan - 302017
-                  </p>
-                  <p className="text-xs text-purple-400 mt-1">0141-2715071</p>
-                </div>
-              </div>
+            <div className="flex gap-3">
+              {[Twitter, Linkedin, Instagram, Youtube].map((Icon, i) => (
+                <Link key={i} to="/" className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-gray-500 hover:text-purple-400 transition-all">
+                  <Icon size={18} />
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Footer Bottom */}
-          <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] sm:text-xs">
-            <p className="text-gray-500">
-              © {currentYear} IIIT Kota. All Rights Reserved.
-            </p>
-            <div className="flex gap-6 text-gray-500">
-              <a href="#" className="hover:text-purple-400 transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-purple-400 transition-colors">
-                Terms of Use
-              </a>
-              <a href="#" className="hover:text-purple-400 transition-colors">
-                Contact Support
-              </a>
+          {/* Targeted SEO Links Section */}
+          <div className="lg:col-span-4 space-y-6">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest border-l-2 border-purple-500 pl-3">
+              Quick Resources
+            </h4>
+            <nav className="grid grid-cols-1 gap-4">
+              <Link to="/sgpacalculator" className="group flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all">
+                <span className="text-xs font-bold text-gray-400 group-hover:text-purple-400 flex items-center gap-3">
+                  <Calculator size={16} /> IIIT Kota SGPA Calculator
+                </span>
+                <ExternalLink size={14} className="text-gray-700" />
+              </Link>
+              <Link to="/previousyearpaper" className="group flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all">
+                <span className="text-xs font-bold text-gray-400 group-hover:text-purple-400 flex items-center gap-3">
+                  <Archive size={16} /> Previous Year Papers
+                </span>
+                <ExternalLink size={14} className="text-gray-700" />
+              </Link>
+            </nav>
+          </div>
+
+          {/* Contact Section */}
+          <div className="lg:col-span-3 space-y-6">
+            <h4 className="text-white font-bold text-xs uppercase tracking-widest border-l-2 border-purple-500 pl-3">
+              Campus Info
+            </h4>
+            <div className="space-y-4 text-[11px] text-gray-500">
+              <div className="flex gap-3">
+                <MapPin size={16} className="text-purple-500 shrink-0" />
+                <p>Ranpur, Kota, Rajasthan – 325003</p>
+              </div>
+              <div className="flex gap-3">
+                <Globe size={16} className="text-purple-500 shrink-0" />
+                <Link to="https://iiitkota.ac.in" target="_blank" className="hover:text-white">iiitkota.ac.in</Link>
+              </div>
+              <div className="flex gap-3">
+                <Mail size={16} className="text-purple-500 shrink-0" />
+                <Link to="mailto:office@iiitkota.ac.in" className="hover:text-white">office@iiitkota.ac.in</Link>
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* SEO Keywords Footer Strip */}
+        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[10px] font-bold text-gray-700 uppercase tracking-[0.2em]">
+            © {currentYear} IIIT KOTA HUB • Academic Archive • SGPA Calculator
+          </p>
+          <div className="flex gap-6 text-[10px] font-bold text-gray-700 uppercase tracking-widest">
+            <Link to="#" className="hover:text-purple-500 transition-colors">Privacy</Link>
+            <Link to="#" className="hover:text-purple-500 transition-colors">Terms</Link>
           </div>
         </div>
       </div>

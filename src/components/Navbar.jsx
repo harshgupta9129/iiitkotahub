@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Info, Calculator, ExternalLink } from "lucide-react";
+import { Menu, X, Info, Calculator, ExternalLink , Archive} from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -17,6 +17,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "About Us", path: "/aboutus", icon: <Info size={18} /> },
     { name: "SGPA Calculator", path: "/sgpacalculator", icon: <Calculator size={18} /> },
+    { name: "Papers Archive", path: "/previousyearpaper", icon: <Archive size={18} /> },
   ];
 
   return (
