@@ -89,8 +89,8 @@
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/iiitkota-hub.git
-cd iiitkota-hub
+git clone https://github.com/harshgupta9129/iiitkotahub.git
+cd iiitkotahub
 ```
 
 ### 2️⃣ Install Dependencies
