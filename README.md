@@ -1,4 +1,4 @@
-# 🏫 IIIT KOTA HUB 🚀  
+# IIIT KOTA HUB 
 ### *The Ultimate Student Resource & Academic Toolset*
 
 <p align="center">
