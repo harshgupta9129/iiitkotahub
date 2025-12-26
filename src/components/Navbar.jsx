@@ -23,11 +23,11 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-[100] transition-all duration-500 ${
+        className={`fixed top-0 w-full z-100 transition-all duration-500 ${
           scrolled ? "pt-2 md:pt-3" : "pt-0"
         }`}
       >
-        <div className="max-w-[1400px] mx-auto px-0 md:px-6 lg:px-10">
+        <div className="max-w-350 mx-auto px-0 md:px-6 lg:px-10">
           <div 
             className={`transition-all duration-500 flex items-center justify-between px-4 md:px-10 h-20 md:h-24 ${
               scrolled 
@@ -36,7 +36,7 @@ export default function Navbar() {
             }`}
           >
             
-            {/* LOGO SECTION - Enhanced Desktop Presence */}
+            {/* LOGO SECTION - Desktop */}
             <Link to="/" className="flex items-center gap-4 group shrink-0">
               <div className="relative">
                 <div className="absolute -inset-2 bg-purple-500 rounded-full blur-xl opacity-0 group-hover:opacity-20 transition duration-500"></div>
@@ -59,13 +59,13 @@ export default function Navbar() {
                 </span>
               </div>
               
-              {/* Ultra-Mobile Branding */}
+              {/* Mobile */}
               <span className="sm:hidden text-white font-bold text-xl tracking-tighter">
                 IIIT <span className="text-purple-500 text-glow">KOTA</span>
               </span>
             </Link>
 
-            {/* DESKTOP MENU - Better Spacing & Visual Cues */}
+            {/* DESKTOP MENU */}
             <div className="hidden lg:flex items-center gap-8">
               <ul className="flex items-center gap-2">
                 {navLinks.map((link) => (
@@ -90,7 +90,7 @@ export default function Navbar() {
                 ))}
               </ul>
 
-              <div className="h-10 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+              <div className="h-10 w-px bg-linear-to-b from-transparent via-white/10 to-transparent" />
 
               <a 
                 href="https://iiitkota.ac.in" 
@@ -112,7 +112,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* MOBILE DRAWER (Animated) */}
+        {/* MOBILE DRAWER */}
         <AnimatePresence>
           {open && (
             <>
@@ -124,7 +124,7 @@ export default function Navbar() {
               <motion.div
                 initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 h-full w-[80%] max-w-[350px] bg-[#060417] border-l border-white/10 z-[110] p-8 lg:hidden"
+                className="fixed top-0 right-0 h-full w-[80%] max-w-87.5 bg-[#060417] border-l border-white/10 z-110 p-8 lg:hidden"
               >
                 <div className="flex justify-between items-center mb-10">
                   <span className="text-purple-500 font-black tracking-widest uppercase">Navigation</span>
@@ -151,7 +151,7 @@ export default function Navbar() {
         </AnimatePresence>
       </nav>
 
-      {/* Spacer to avoid content hiding under navbar */}
+      {/* Space For Navbar For Fixed Position On Top */}
       <div className="h-20 md:h-28"></div>
     </>
   );

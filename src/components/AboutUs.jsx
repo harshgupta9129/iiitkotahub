@@ -61,7 +61,7 @@ const AboutUs = () => {
         <p className="max-w-3xl mx-auto text-gray-400 text-base md:text-lg leading-relaxed font-medium">
           The IIIT KOTA HUB was engineered to eliminate academic uncertainty. 
           By providing a centralized **SGPA Calculator** and a high-performance 
-          **Academic Archive**, we empower students to track progress and prepare 
+          Academic Archive, we empower students to track progress and prepare 
           efficiently for examinations.
         </p>
       </header>
@@ -134,7 +134,7 @@ const AboutUs = () => {
         </div>
       </div>
 
-      {/* --- FAQ SECTION (High SEO Value) --- */}
+      {/* --- FAQ SECTION --- */}
       <section className="mb-24">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Common Inquiries</h2>

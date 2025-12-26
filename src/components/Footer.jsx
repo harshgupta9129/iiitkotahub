@@ -37,9 +37,9 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative mt-20 border-t border-white/10 bg-[#030014] overflow-hidden">
+    <footer className="relative mt-20 border-t border-white/10 bg-[/030014] overflow-hidden">
       {/* Visual Accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-purple-500 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
@@ -59,7 +59,7 @@ export default function Footer() {
               Academic Archive for previous year question papers.
             </p>
 
-            {/* Live Counter for SEO Trust */}
+            {/* Live Counter  */}
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-purple-500/5 border border-purple-500/10">
               <Eye size={16} className="text-purple-500" />
               <div className="text-left">
@@ -128,8 +128,8 @@ export default function Footer() {
             © {currentYear} IIIT KOTA HUB • Academic Archive • SGPA Calculator
           </p>
           <div className="flex gap-6 text-[10px] font-bold text-gray-700 uppercase tracking-widest">
-            <Link to="#" className="hover:text-purple-500 transition-colors">Privacy</Link>
-            <Link to="#" className="hover:text-purple-500 transition-colors">Terms</Link>
+            <Link to="/" className="hover:text-purple-500 transition-colors">Privacy</Link>
+            <Link to="/" className="hover:text-purple-500 transition-colors">Terms</Link>
           </div>
         </div>
       </div>

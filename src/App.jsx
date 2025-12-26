@@ -24,7 +24,7 @@ function App() {
       <meta name="description" content="Official IIIT Kota Hub. Calculate SGPA/CGPA accurately and download Previous Year Question Papers from our dedicated Academic Archive." />
       <meta name="keywords" content="iiit kota hub, iiit kota sgpa calculator, iiit kota previous year papers, iiit kota academic archive, iiit kota question papers, iiitkota hub" />
       
-      {/* Scroll to top must be outside Routes to trigger on every path change */}
+      {/* Scroll to top when routes changes */}
       <ScrollToTop />
 
       {/* Background Depth Effects */}
@@ -35,7 +35,7 @@ function App() {
 
       <Navbar />
 
-      <main className="flex-grow relative">
+      <main className="grow relative">
         <AnimatePresence mode="wait">
           {/* Transition wrapper uses location.pathname to restart animations on change */}
           <Routes location={location} key={location.pathname}>

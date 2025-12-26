@@ -76,9 +76,9 @@ const SgpaCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#030211] text-white selection:bg-purple-500/30">
+    <div className="min-h-screen bg-brand-dark text-white selection:bg-purple-500/30">
       
-      {/* --- SEO METADATA (Vite/React 19) --- */}
+      {/* --- SEO METADATA  --- */}
       <title>IIIT Kota SGPA & CGPA Calculator | Official Student Hub</title>
       <meta name="description" content="Calculate your IIIT Kota SGPA and CGPA accurately. The most optimized result tool for B.Tech CSE and IT branches at IIIT Kota." />
       <meta name="keywords" content="IIIT Kota SGPA Calculator, IIIT Kota CGPA Calculator, IIITK Hub, IIIT Kota Results, CSE IT grading" />
@@ -94,8 +94,8 @@ const SgpaCalculator = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium mb-4">
               <GraduationCap size={14} /> IIIT KOTA HUB
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-gray-400 uppercase">
-              SGPA & CGPA <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500 ">Calculator</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-gray-400 uppercase">
+              SGPA & CGPA <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-indigo-500">Calculator</span>
             </h1>
             <h2 className="mt-4 text-gray-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
               Fast, accurate, and optimized for all branches at IIIT Kota
@@ -171,7 +171,7 @@ const SgpaCalculator = () => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="hidden lg:block bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-center shadow-[0_0_40px_rgba(147,51,234,0.3)]"
+                  className="hidden lg:block bg-linear-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-center shadow-[0_0_40px_rgba(147,51,234,0.3)]"
                 >
                   <p className="text-purple-200 text-sm font-medium mb-1 uppercase tracking-tighter italic">Result Score</p>
                   <h3 className="text-6xl font-black text-white tracking-tighter">{sgpa}</h3>
@@ -216,7 +216,7 @@ const SgpaCalculator = () => {
                         <select
                           value={subjectState[sub.code]?.grade || ""}
                           onChange={(e) => handleGradeChange(sub.code, e.target.value)}
-                          className={`w-full bg-[#030211] border rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all appearance-none cursor-pointer
+                          className={`w-full bg-brand-dark border rounded-xl px-4 py-3.5 text-sm focus:outline-none transition-all appearance-none cursor-pointer
                             ${subjectState[sub.code]?.grade ? "border-purple-500 text-white" : "border-white/10 text-gray-500"}`}
                         >
                           <option value="" disabled>Select Grade</option>
@@ -240,7 +240,7 @@ const SgpaCalculator = () => {
                   </div>
 
                   {sgpa && (
-                    <div className="lg:hidden mt-6 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-center shadow-2xl">
+                    <div className="lg:hidden mt-6 bg-linear-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-center shadow-2xl">
                       <p className="text-purple-200 text-[10px] font-bold uppercase tracking-widest mb-1">Your Result</p>
                       <h2 className="text-5xl font-black text-white">{sgpa}</h2>
                     </div>

@@ -8,7 +8,7 @@ export default function Stepper({ steps, currentStep }) {
       <div
         className="flex items-center justify-between
         rounded-xl sm:rounded-2xl
-        bg-gradient-to-r from-[#0b0f2f]/90 via-[#120b3d]/90 to-[#1a0f4f]/90
+        bg-linear-to-r from-[#0b0f2f]/90 via-[#120b3d]/90 to-[#1a0f4f]/90
         backdrop-blur-xl border border-white/10
         shadow-lg shadow-purple-900/30
         px-3 py-4 sm:px-6 sm:py-5"
@@ -62,7 +62,7 @@ export default function Stepper({ steps, currentStep }) {
               {index !== steps.length - 1 && (
                 <div className="flex-1 px-2 sm:px-4">
                   <div
-                    className={`h-[2px] w-full rounded-full transition-all duration-700
+                    className={`h-0.5 w-full rounded-full transition-all duration-700
                     ${
                       step.id < currentStep
                         ? "bg-linear-to-r from-purple-600 to-indigo-600 shadow-[0_0_8px_rgba(147,51,234,0.3)]"

@@ -76,8 +76,8 @@ const Home = () => {
 
         {/* Dynamic Background Glows */}
         <div className="hidden lg:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full -z-10">
-            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]" />
+            <div className="absolute top-0 left-1/4 w-125 h-125 bg-purple-600/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-1/4 w-125 h-125 bg-blue-600/10 rounded-full blur-[120px]" />
         </div>
       </section>
 
@@ -96,17 +96,17 @@ const Home = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {/* Feature: Calculator */}
-          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/10 hover:border-purple-500/50 hover:bg-white/[0.04] transition-all group relative overflow-hidden">
+          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/2 border border-white/10 hover:border-purple-500/50 hover:bg-white/4 transition-all group relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all" />
             <Calculator size={32} className="text-purple-500 mb-8" />
             <h3 className="text-2xl font-bold text-white mb-4 uppercase tracking-tight">SGPA Calculator</h3>
             <p className="text-gray-500 text-sm leading-relaxed font-medium">
-              Optimized for IIIT Kota CSE & IT branches. Follows the official 10-point relative grading scale for 100% accuracy.
+              Optimized for IIIT Kota all branches. Follows the official 10-point relative grading scale for 100% accuracy.
             </p>
           </motion.div>
 
           {/* Feature: Archive */}
-          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.04] transition-all group relative overflow-hidden">
+          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/2 border border-white/10 hover:border-indigo-500/50 hover:bg-white/4 transition-all group relative overflow-hidden">
              <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-all" />
             <Archive size={32} className="text-indigo-500 mb-8" />
             <h3 className="text-2xl font-bold text-white mb-4 uppercase tracking-tight">Academic Archive</h3>
@@ -116,7 +116,7 @@ const Home = () => {
           </motion.div>
 
           {/* Feature: Grade Policy */}
-          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/10 hover:border-pink-500/50 hover:bg-white/[0.04] transition-all group relative overflow-hidden">
+          <motion.div variants={itemVariants} className="p-10 rounded-[2.5rem] bg-white/2 border border-white/10 hover:border-pink-500/50 hover:bg-white/4 transition-all group relative overflow-hidden">
              <div className="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-all" />
             <ShieldCheck size={32} className="text-pink-500 mb-8" />
             <h3 className="text-2xl font-bold text-white mb-4 uppercase tracking-tight">Accurate Policy</h3>

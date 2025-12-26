@@ -5,9 +5,9 @@ export default function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Instantly move the window to the top-left corner
+    // Instantly To The Top
     window.scrollTo(0, 0);
-  }, [pathname]); // Fires every time the URL path changes
+  }, [pathname]); // When Routes Changes
 
   return null;
 }

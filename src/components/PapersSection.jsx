@@ -89,8 +89,8 @@ export default function PapersSection() {
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/40 border border-purple-500/30 text-purple-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
           <Archive size={12} /> Academic Archive Hub
         </div>
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-          ARCHIVE <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">VAULT</span>
+        <h1 className="text-5xl md:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-gray-400 uppercase">
+          ARCHIVE <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-indigo-500">VAULT</span>
         </h1>
         <h2 className="text-gray-400 text-xs md:text-sm mt-4 font-bold max-w-lg mx-auto leading-relaxed uppercase tracking-widest">
           The Official Repository for IIIT Kota Previous Year Question Papers
@@ -101,7 +101,7 @@ export default function PapersSection() {
 
       <section className="max-w-6xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         <aside className="lg:col-span-4 h-full">
-          <div className="bg-[#0b0f2f]/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl h-full flex flex-col justify-between">
+          <div className="bg-[#0b0f2f]/80 backdrop-blur-2xl border border-white/10 rounded-4xl p-8 shadow-2xl h-full flex flex-col justify-between">
             <div className="space-y-6">
               <h3 className="text-purple-400 font-black uppercase tracking-[0.15em] text-[11px] mb-4 flex items-center gap-2">
                 <Search size={14} /> Filter Repository
@@ -118,7 +118,7 @@ export default function PapersSection() {
             <button 
               onClick={fetchFinalPapers}
               disabled={!selection.examType || loading}
-              className="w-full mt-8 py-4 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl text-white font-black uppercase tracking-widest text-xs transition-all hover:shadow-[0_0_30px_rgba(147,51,234,0.4)] active:scale-95 disabled:opacity-20"
+              className="w-full mt-8 py-4 bg-linear-to-br from-purple-600 to-indigo-700 rounded-2xl text-white font-black uppercase tracking-widest text-xs transition-all hover:shadow-[0_0_30px_rgba(147,51,234,0.4)] active:scale-95 disabled:opacity-20"
             >
               {loading ? <Loader2 size={18} className="animate-spin mx-auto" /> : "Verify & Access Vault"}
             </button>
@@ -126,7 +126,7 @@ export default function PapersSection() {
         </aside>
 
         <main className="lg:col-span-8">
-          <div className="bg-white/[0.01] border-2 border-dashed border-white/5 rounded-[2rem] p-8 min-h-[500px] h-full flex flex-col relative overflow-hidden transition-all duration-500">
+          <div className="bg-white/1` border-2 border-dashed border-white/5 rounded-4xl p-8 min-h-125 h-full flex flex-col relative overflow-hidden transition-all duration-500">
             {!papers ? (
               <div className="m-auto text-center opacity-40">
                 <BookOpen size={60} className="mx-auto mb-4 text-gray-600" />
@@ -148,7 +148,7 @@ export default function PapersSection() {
                   {Object.entries(papers).map(([name, url]) => (
                     <a 
                       key={name} href={url} target="_blank" rel="noopener noreferrer" 
-                      className="flex items-center justify-between p-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/[0.08] hover:border-purple-500/40 transition-all group"
+                      className="flex items-center justify-between p-5 bg-white/3 border border-white/5 rounded-2xl hover:bg-white/[0.08] hover:border-purple-500/40 transition-all group"
                       title={`Download IIIT Kota ${name.replace(/_/g, " ")} Paper`}
                     >
                       <div className="flex items-center gap-4">
