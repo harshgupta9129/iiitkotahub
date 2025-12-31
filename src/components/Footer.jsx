@@ -14,7 +14,8 @@ import {
   Eye,
   Archive,
   Calculator,
-  ExternalLink
+  ExternalLink,
+  Upload
 } from "lucide-react";
 
 export default function Footer() {
@@ -85,15 +86,21 @@ export default function Footer() {
               Quick Resources
             </h4>
             <nav className="grid grid-cols-1 gap-4">
-              <Link to="/sgpacalculator" className="group flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all">
+              <Link to="/sgpacalculator" className="group flex items-center justify-between p-4 rounded-xl bg-white/2 border border-white/5 hover:border-purple-500/30 transition-all">
                 <span className="text-xs font-bold text-gray-400 group-hover:text-purple-400 flex items-center gap-3">
-                  <Calculator size={16} /> IIIT Kota SGPA Calculator
+                  <Calculator size={16} className="animate-pulse text-yellow-500"/> IIIT Kota SGPA Calculator
                 </span>
                 <ExternalLink size={14} className="text-gray-700" />
               </Link>
-              <Link to="/previousyearpaper" className="group flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all">
+              <Link to="/previousyearpaper" className="group flex items-center justify-between p-4 rounded-xl bg-white/2 border border-white/5 hover:border-purple-500/30 transition-all">
                 <span className="text-xs font-bold text-gray-400 group-hover:text-purple-400 flex items-center gap-3">
-                  <Archive size={16} /> Previous Year Papers
+                  <Archive size={16} className="animate-pulse text-yellow-500"/> Previous Year Papers
+                </span>
+                <ExternalLink size={14} className="text-gray-700" />
+              </Link>
+              <Link to="/uploadpaper" className="group flex items-center justify-between p-4 rounded-xl bg-white/2 border border-white/5 hover:border-purple-500/30 transition-all">
+                <span className="text-xs font-bold text-gray-400 group-hover:text-purple-400 flex items-center gap-3">
+                  <Upload size={16} className="animate-pulse text-yellow-500"/> Upload Papers
                 </span>
                 <ExternalLink size={14} className="text-gray-700" />
               </Link>
@@ -116,7 +123,7 @@ export default function Footer() {
               </div>
               <div className="flex gap-3">
                 <Mail size={16} className="text-purple-500 shrink-0" />
-                <Link to="mailto:office@iiitkota.ac.in" className="hover:text-white">office@iiitkota.ac.in</Link>
+                <Link to="mailto:iiitkotahub@gmail.com" className="hover:text-white">iiitkotahub@gmail.com</Link>
               </div>
             </div>
           </div>

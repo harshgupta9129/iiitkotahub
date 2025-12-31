@@ -71,7 +71,7 @@
 |-------------|------------|
 | **Frontend** | React.js 19, Vite, Tailwind CSS |
 | **Animations** | Framer Motion |
-| **Backend / DB** | Firebase Realtime Database |
+| **Backend / DB** | Firebase Realtime Database, Telegram |
 | **Icons** | Lucide React |
 | **Hosting** | Vercel |
 
@@ -102,14 +102,19 @@ npm install
 Create a `.env.local` file in the root directory:
 
 ```env
+# Firebase Config
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=iiitkota-a82bd.firebaseapp.com
-VITE_FIREBASE_DATABASE_URL=https://iiitkota-a82bd-default-rtdb.asia-southeast1.firebasedatabase.app
 VITE_FIREBASE_PROJECT_ID=iiitkota-a82bd
 VITE_FIREBASE_STORAGE_BUCKET=iiitkota-a82bd.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+VITE_FIREBASE_DATABASE_URL=https://iiitkota-a82bd-default-rtdb.asia-southeast1.firebasedatabase.app
+
+# Telegram Config
+VITE_TELEGRAM_BOT_TOKEN=bot_token
+VITE_TELEGRAM_CHAT_ID=chat_id
 ```
 
 ### 4️⃣ Run Development Server

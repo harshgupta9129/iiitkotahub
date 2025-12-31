@@ -60,7 +60,7 @@ const AboutUs = () => {
         </h1>
         <p className="max-w-3xl mx-auto text-gray-400 text-base md:text-lg leading-relaxed font-medium">
           The IIIT KOTA HUB was engineered to eliminate academic uncertainty. 
-          By providing a centralized **SGPA Calculator** and a high-performance 
+          By providing a centralized SGPA Calculator and a high-performance 
           Academic Archive, we empower students to track progress and prepare 
           efficiently for examinations.
         </p>
@@ -75,7 +75,7 @@ const AboutUs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="p-8 rounded-[2rem] bg-white/5 border border-white/10 text-center hover:border-purple-500/50 transition-all"
+            className="p-8 rounded-4xl bg-white/5 border border-white/10 text-center hover:border-purple-500/50 transition-all"
           >
             <p className="text-4xl md:text-5xl font-black text-white mb-2">{stat.value}</p>
             <p className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em]">{stat.label}</p>
@@ -114,8 +114,8 @@ const AboutUs = () => {
 
         {/* Brand Showcase Box */}
         <div className="relative group">
-          <div className="absolute -inset-4 bg-gradient-to-tr from-purple-600/20 to-pink-600/20 blur-3xl rounded-[3rem] opacity-50 group-hover:opacity-100 transition-opacity" />
-          <div className="relative bg-[#0b0f2f]/80 backdrop-blur-2xl p-10 rounded-[3rem] border border-white/10 overflow-hidden min-h-[300px] flex flex-col justify-center">
+          <div className="absolute -inset-4 bg-linear-to-tr from-purple-600/20 to-pink-600/20 blur-3xl rounded-[3rem] opacity-50 group-hover:opacity-100 transition-opacity" />
+          <div className="relative bg-[#0b0f2f]/80 backdrop-blur-2xl p-10 rounded-[3rem] border border-white/10 overflow-hidden min-h-75 flex flex-col justify-center">
              <div className="absolute -top-10 -right-10 p-6 opacity-5">
                 <Target size={200} />
              </div>
@@ -157,20 +157,20 @@ const AboutUs = () => {
       </section>
 
       {/* --- CONTACT SECTION --- */}
-      <section className="p-12 md:p-20 rounded-[4rem] bg-gradient-to-b from-purple-600/5 to-transparent border border-white/5 text-center">
+      <section className="p-12 md:p-20 rounded-[4rem] bg-linear-to-b from-purple-600/5 to-transparent border border-white/5 text-center">
         <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8">
           <Users className="text-purple-500" size={32} />
         </div>
         <h2 className="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Student Connectivity</h2>
         <p className="text-gray-500 mb-10 max-w-lg mx-auto font-medium">
           For technical discrepancies in the Academic Archive or the SGPA tool, 
-          contact the development maintainers or the institute office.
+          contact the development maintainers.
         </p>
         <a 
-          href="mailto:office@iiitkota.ac.in" 
+          href="mailto:iiitkotahub@gmail.com" 
           className="inline-flex items-center gap-4 px-10 py-5 bg-purple-600 hover:bg-purple-500 rounded-2xl text-white font-black uppercase tracking-widest text-xs transition-all shadow-2xl shadow-purple-600/20"
         >
-          <Mail size={18} /> Contact Office
+          <Mail size={18} /> Contact Here
         </a>
       </section>
 

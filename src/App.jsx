@@ -8,53 +8,43 @@ import AboutUs from './components/AboutUs'
 import SgpaCalculator from './components/SgpaCalculator'
 import Footer from "./components/Footer";
 import PapersSection from "./components/PapersSection";
+import PaperUpload from "./components/PaperUpload";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen w-full flex flex-col
-      bg-[#030211] selection:bg-purple-500/30 selection:text-white">
-      
-      {/* CRITICAL SEO METADATA 
-          These tags tell Google exactly what your site is about.
-          Using specific keywords helps you outrank generic Vercel links.
-      */}
-      <title>IIIT KOTA HUB | SGPA Calculator & Academic Archive</title>
-      <meta name="description" content="Official IIIT Kota Hub. Calculate SGPA/CGPA accurately and download Previous Year Question Papers from our dedicated Academic Archive." />
-      <meta name="keywords" content="iiit kota hub, iiit kota sgpa calculator, iiit kota previous year papers, iiit kota academic archive, iiit kota question papers, iiitkota hub" />
-      
-      {/* Scroll to top when routes changes */}
+    <div className="min-h-screen w-full flex flex-col bg-brand-dark selection:bg-purple-500/30 selection:text-white overflow-x-hidden">
+      {/* Scroll Management */}
       <ScrollToTop />
 
-      {/* Background Depth Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-900/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/10 blur-[120px]" />
+      {/* FIXED GLOBAL BACKGROUND DECORATION */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[140px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[140px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       <Navbar />
 
-      <main className="grow relative">
+      {/* PAGE TRANSITIONS CONTAINER */}
+      <main className="grow relative flex flex-col">
         <AnimatePresence mode="wait">
-          {/* Transition wrapper uses location.pathname to restart animations on change */}
           <Routes location={location} key={location.pathname}>
-            <Route 
-              path="/" 
-              element={<PageWrapper><Home /></PageWrapper>} 
-            />
-            <Route 
-              path="/aboutus" 
-              element={<PageWrapper><AboutUs /></PageWrapper>} 
-            />
-            <Route 
-              path="/sgpacalculator" 
-              element={<PageWrapper><SgpaCalculator /></PageWrapper>} 
-            />
-            <Route 
-              path="/previousyearpaper" 
-              element={<PageWrapper><PapersSection /></PageWrapper>} 
-            />
+            {/* Core Pages */}
+            <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+            <Route path="/aboutus" element={<PageWrapper><AboutUs /></PageWrapper>} />
+            <Route path="/sgpacalculator" element={<PageWrapper><SgpaCalculator /></PageWrapper>} />
+            
+            {/* Archive System */}
+            <Route path="/previousyearpaper" element={<PageWrapper><PapersSection /></PageWrapper>} />
+            <Route path="/uploadpaper" element={<PageWrapper><PaperUpload /></PageWrapper>} />
+            
+            {/* Restricted Access */}
+            <Route path="/admindashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+            
+            {/* 404 Fallback - Recommended for Production */}
+            <Route path="*" element={<PageWrapper><Home /></PageWrapper>} />
           </Routes>
         </AnimatePresence>
       </main>
@@ -64,16 +54,13 @@ function App() {
   )
 }
 
-/** * Reusable wrapper for smooth page entry.
- * Provides a premium "App-like" feel during navigation.
- */
 const PageWrapper = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 10 }}
+    initial={{ opacity: 0, y: 15 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -10 }}
-    transition={{ duration: 0.3, ease: "easeOut" }}
-    className="w-full"
+    exit={{ opacity: 0, y: -15 }}
+    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    className="w-full flex flex-col grow"
   >
     {children}
   </motion.div>

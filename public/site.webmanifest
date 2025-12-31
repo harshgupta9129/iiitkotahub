@@ -1,19 +1,25 @@
 {
     "name": "IIIT KOTA HUB",
     "short_name": "IIITK Hub",
+    "description": "The official student resource hub for IIIT Kota. SGPA Calculator & Academic Archive.",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "/android-chrome-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
-    "theme_color": "#9333ea",
-    "background_color": "#030014",
-    "display": "standalone"
+    "start_url": "/",
+    "scope": "/",
+    "theme_color": "#030211",
+    "background_color": "#030211",
+    "display": "standalone",
+    "orientation": "portrait"
 }
