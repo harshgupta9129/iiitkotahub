@@ -42,7 +42,7 @@ export default function PaperUpload() {
 
     // Calculate total size
     const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
-    
+
     if (totalSize > MAX_FILE_SIZE) {
       setError(`Total file size exceeds 10MB limit. Current: ${(totalSize / (1024 * 1024)).toFixed(2)}MB`);
       setFiles([]);
@@ -61,26 +61,26 @@ export default function PaperUpload() {
         const img = new window.Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          
+
           // Smart downscaling: max 1400px for good quality while keeping speed
           const maxDimension = 1400;
           const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
-          
+
           const ctx = canvas.getContext("2d", { alpha: false });
-          
+
           // Medium quality smoothing for better output
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'medium';
-          
+
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          
+
           // Balanced compression: 0.75 quality for good quality with decent size reduction
-          resolve({ 
-            src: canvas.toDataURL("image/jpeg", 0.75), 
-            w: canvas.width, 
-            h: canvas.height 
+          resolve({
+            src: canvas.toDataURL("image/jpeg", 0.75),
+            w: canvas.width,
+            h: canvas.height
           });
         };
         img.src = e.target.result;
@@ -93,89 +93,89 @@ export default function PaperUpload() {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    
+
     // Parallel processing for maximum speed
     const resolvedImages = await Promise.all(imageFiles.map(file => processImage(file)));
-    
+
     resolvedImages.forEach((imgData, i) => {
       if (i > 0) doc.addPage();
       const ratio = Math.min(pageWidth / imgData.w, pageHeight / imgData.h);
       const imgWidth = imgData.w * ratio;
       const imgHeight = imgData.h * ratio;
-      
+
       // Medium compression mode for better quality
       doc.addImage(
-        imgData.src, 
-        "JPEG", 
-        (pageWidth - imgWidth) / 2, 
-        2, 
-        imgWidth, 
-        imgHeight, 
-        undefined, 
+        imgData.src,
+        "JPEG",
+        (pageWidth - imgWidth) / 2,
+        2,
+        imgWidth,
+        imgHeight,
+        undefined,
         'MEDIUM'
       );
     });
-    
+
     return doc.output("blob");
   };
 
   const handleUpload = async () => {
     setError("");
-    
+
+    // 1. Validation
     if (meta.courseCode.length !== 6) {
       setError("Course Code must be 6 characters.");
       return;
     }
-    
+
     if (files.length === 0 || !meta.year || !meta.sem || !meta.branch || !meta.examType) {
       setError("Fill all metadata fields.");
       return;
     }
-    
+
     setLoading(true);
 
     try {
-      // 1. Prepare File Name
-      // Added timestamp to ensure uniqueness in the bucket
-      const timestamp = Date.now();
-      const cleanName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.year}_${timestamp}.pdf`.replace(/\s+/g, "_");
-      
+      // 2. GENERATE STANDARDIZED NAME
+      // Format: CST101_CSE_1_2025_IIITKOTAHUB.pdf (Always Uppercase)
+      const standardizedName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.year}_IIITKOTAHUB.pdf`.toUpperCase();
+
       let finalBlob;
-      
-      // Fast path for PDFs
+
+      // Process file (PDF or Image-to-PDF)
       if (files.length === 1 && files[0].type === "application/pdf") {
         finalBlob = files[0];
       } else {
-        // Optimized image-to-PDF conversion
         finalBlob = await convertImagesToPdf(files);
       }
 
-      // Final size check after processing
+      // Check size
       if (finalBlob.size > MAX_FILE_SIZE) {
-        throw new Error(`Processed file exceeds 10MB limit: ${(finalBlob.size / (1024 * 1024)).toFixed(2)}MB`);
+        throw new Error(`File exceeds 10MB limit: ${(finalBlob.size / (1024 * 1024)).toFixed(2)}MB`);
       }
 
-      // 2. Upload to Supabase Storage ('pdfs' bucket)
+      // 3. UPLOAD TO SUPABASE STORAGE ('pdfs' bucket)
+      // We use 'upsert: true' so if a student re-uploads a corrected version of the same paper, it updates it.
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('pdfs')
-        .upload(cleanName, finalBlob, {
+        .upload(standardizedName, finalBlob, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true
         });
 
       if (uploadError) throw uploadError;
 
-      // 3. Get the Public URL
+      // 4. GET PUBLIC URL
       const { data: { publicUrl } } = supabase.storage
         .from('pdfs')
-        .getPublicUrl(cleanName);
+        .getPublicUrl(standardizedName);
 
-      // 4. Insert Metadata into Supabase Database ('papers' table)
+      // 5. INSERT METADATA INTO DATABASE ('papers' table)
       const { error: dbError } = await supabase
         .from('papers')
         .insert([
           {
-            title: meta.courseCode, // Or any title logic you prefer
+            title: standardizedName.replace('.pdf', ''), // Title is filename without extension
             course_code: meta.courseCode,
             year: meta.year,
             sem: meta.sem,
@@ -183,19 +183,19 @@ export default function PaperUpload() {
             exam_type: meta.examType,
             file_url: publicUrl,
             uploaded_by: meta.uploadedBy,
-            status: 'pending' // Defaults to pending
+            status: 'pending'
           }
         ]);
 
       if (dbError) throw dbError;
-      
+
       alert("SUBMISSION SUCCESS: Paper Sent For Approval.");
       setFiles([]);
       setMeta({ ...meta, courseCode: "", examType: "", sem: "", branch: "" });
 
     } catch (err) {
       console.error(err);
-      setError(err.message || "UPLOAD ERROR: Connection failed or file too large.");
+      setError(err.message || "UPLOAD ERROR: Connection failed.");
     } finally {
       setLoading(false);
     }
@@ -243,31 +243,31 @@ export default function PaperUpload() {
         <aside className="lg:col-span-5">
           <div className="bg-[#0b0f2f]/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-6 sm:p-10 shadow-2xl h-full flex flex-col justify-between hover:border-purple-500/30 transition-all duration-500">
             <div className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Uploaded By</label>
-                  <div className="relative">
-                    <User size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                    <input type="text" value={meta.uploadedBy} onChange={(e) => setMeta({ ...meta, uploadedBy: e.target.value })} className="w-full bg-white/3 border border-white/10 rounded-xl py-4.5 pl-11 pr-4 text-xs font-bold outline-none focus:border-purple-500/50 transition-all text-white" />
-                  </div>
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Uploaded By</label>
+                <div className="relative">
+                  <User size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input type="text" value={meta.uploadedBy} onChange={(e) => setMeta({ ...meta, uploadedBy: e.target.value })} className="w-full bg-white/3 border border-white/10 rounded-xl py-4.5 pl-11 pr-4 text-xs font-bold outline-none focus:border-purple-500/50 transition-all text-white" />
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1 flex justify-between">Course Code <span>{meta.courseCode.length}/6</span></label>
-                  <div className="relative">
-                    <Code size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                    <input type="text" placeholder="ECT205" maxLength={6} value={meta.courseCode} onChange={(e) => setMeta({ ...meta, courseCode: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") })} className="w-full bg-white/3 border border-white/10 rounded-xl py-4.5 pl-11 pr-4 text-xs font-bold outline-none focus:border-purple-500/50 transition-all placeholder:text-gray-800 text-white" />
-                  </div>
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1 flex justify-between">Course Code <span>{meta.courseCode.length}/6</span></label>
+                <div className="relative">
+                  <Code size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input type="text" placeholder="ECT205" maxLength={6} value={meta.courseCode} onChange={(e) => setMeta({ ...meta, courseCode: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") })} className="w-full bg-white/3 border border-white/10 rounded-xl py-4.5 pl-11 pr-4 text-xs font-bold outline-none focus:border-purple-500/50 transition-all placeholder:text-gray-800 text-white" />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <CustomDropdown label="Year" value={meta.year} options={yearOptions} onChange={(val) => setMeta({ ...meta, year: val })} />
-                  <CustomDropdown label="Semester" value={meta.sem} options={[1, 2, 3, 4, 5, 6, 7, 8]} onChange={(val) => setMeta({ ...meta, sem: val })} />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                <CustomDropdown label="Year" value={meta.year} options={yearOptions} onChange={(val) => setMeta({ ...meta, year: val })} />
+                <CustomDropdown label="Semester" value={meta.sem} options={[1, 2, 3, 4, 5, 6, 7, 8]} onChange={(val) => setMeta({ ...meta, sem: val })} />
+              </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <CustomDropdown label="Branch" value={meta.branch} options={["CSE", "ECE", "AIDE"]} onChange={(val) => setMeta({ ...meta, branch: val })} />
-                  <CustomDropdown label="Category" value={meta.examType} options={["Mid-Term", "End-Term"]} onChange={(val) => setMeta({ ...meta, examType: val })} />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                <CustomDropdown label="Branch" value={meta.branch} options={["CSE", "ECE", "AIDE"]} onChange={(val) => setMeta({ ...meta, branch: val })} />
+                <CustomDropdown label="Category" value={meta.examType} options={["Mid-Term", "End-Term"]} onChange={(val) => setMeta({ ...meta, examType: val })} />
+              </div>
             </div>
           </div>
         </aside>

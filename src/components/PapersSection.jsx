@@ -40,7 +40,7 @@ export default function PapersSection() {
         .from('papers')
         .select('year')
         .eq('status', 'verified');
-      
+
       // Extract unique years
       if (yearData) {
         const uniqueYears = [...new Set(yearData.map(item => item.year))].sort().reverse();
@@ -72,11 +72,36 @@ export default function PapersSection() {
     );
   }, [papers, searchQuery, subjectMap]);
 
-  // 5. SECURE DOWNLOAD HANDLER (Supabase Public URL)
-  const handleDownload = (fileUrl, cleanName) => {
+  // 5. SECURE DOWNLOAD HANDLER
+  const handleDownload = async (fileUrl, courseCode, branch, sem, year) => {
     if (!fileUrl) return;
-    // Direct open since Supabase URLs are permanent and public
-    window.open(fileUrl, "_blank");
+
+    // Generate the official name again for the download
+    // Fallback to "Paper.pdf" if data is missing, but it shouldn't be
+    const fileName = (courseCode && branch && sem && year)
+      ? `${courseCode}_${branch}_${sem}_${year}_IIITKOTAHUB.pdf`
+      : "IIITKOTAHUB_Paper.pdf";
+
+    try {
+      // We fetch the blob to force the filename
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName); // This forces the name
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed:", err);
+      // Fallback: just open in new tab if blob fetch fails
+      window.open(fileUrl, "_blank");
+    }
   };
 
   // --- DROPDOWN LOGIC (Cascading Filters) ---
@@ -86,7 +111,7 @@ export default function PapersSection() {
     setPapers(null);
     setCurrentStep(2);
     if (!year) return;
-    
+
     setLoading(true);
     // Fetch semesters available for this year
     const { data } = await supabase
@@ -94,7 +119,7 @@ export default function PapersSection() {
       .select('sem')
       .eq('status', 'verified')
       .eq('year', year);
-      
+
     if (data) {
       const uniqueSems = [...new Set(data.map(item => item.sem))].sort();
       setOptions(prev => ({ ...prev, sems: uniqueSems }));
@@ -148,7 +173,7 @@ export default function PapersSection() {
   // --- FINAL FETCH ---
   const fetchFinalPapers = async () => {
     setLoading(true);
-    
+
     const { data, error } = await supabase
       .from('papers')
       .select('*')
@@ -165,7 +190,7 @@ export default function PapersSection() {
       setPapers(data || []);
       setCurrentStep(5);
     }
-    
+
     setLoading(false);
   };
 
@@ -285,7 +310,13 @@ export default function PapersSection() {
                   {filteredPapers.map((data) => (
                     <button
                       key={data.id}
-                      onClick={() => handleDownload(data.file_url, data.course_code)}
+                      onClick={() => handleDownload(
+                        data.file_url,
+                        data.course_code,
+                        data.branch,
+                        data.sem,
+                        data.year
+                      )}
                       className="flex items-center justify-between p-4 bg-[#0b0f2f]/40 border border-white/5 rounded-3xl hover:bg-white/[0.07] hover:border-purple-500/40 hover:translate-y-1 transition-all duration-300 group text-left w-full shadow-lg"
                     >
                       <div className="flex items-center gap-5 min-w-0">

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
-import { ref, onValue, runTransaction } from "firebase/database";
-import {Link} from "react-router-dom"
-
+import { Link } from "react-router-dom";
+import { supabase } from "../supabase"; // Updated import
 import {
   Mail,
   MapPin,
@@ -20,21 +18,32 @@ import {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [totalViews, setTotalViews] = useState(null);
+  // Initialize with 3800 to prevent flashing "0" before fetch
+  const [totalViews, setTotalViews] = useState(3800);
 
   useEffect(() => {
-    const viewsRef = ref(db, "totalHubViews");
-    runTransaction(viewsRef, (currentValue) => {
-      return (currentValue || 0) + 1;
-    });
-
-    const unsubscribe = onValue(viewsRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setTotalViews(snapshot.val());
+    const updateViews = async () => {
+      try {
+        // Call the Supabase RPC function to increment views by +1 safely
+        const { data, error } = await supabase.rpc('increment_views');
+        
+        if (error) {
+          console.error("Error updating views:", error);
+          // Fallback: If increment fails, try just fetching the current count
+          const { data: fetchData } = await supabase
+            .from('site_stats')
+            .select('total_views')
+            .single();
+          if (fetchData) setTotalViews(fetchData.total_views);
+        } else {
+          setTotalViews(data);
+        }
+      } catch (err) {
+        console.error("View count error:", err);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    updateViews();
   }, []);
 
   return (
