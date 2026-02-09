@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom"; // Integrated React Router Link
-import { db } from "../firebase";
-import { ref, get, child } from "firebase/database";
+import { Link } from "react-router-dom";
+import { supabase } from "../supabase"; // Updated import
 import Stepper from "./Stepper";
 import {
   Download, FileText, Search, RotateCcw, Archive,
-  Loader2, ChevronDown, BookOpen, ShieldCheck, Sparkles, Upload, User
+  Loader2, ChevronDown, BookOpen, ShieldCheck, Upload, User
 } from "lucide-react";
 
 export default function PapersSection() {
@@ -24,113 +23,101 @@ export default function PapersSection() {
     { id: 4, title: "Vault" },
   ];
 
-  // 1. FINAL SEO ENHANCEMENT - Updates document title and meta without changing UI
+  // 1. SEO ENHANCEMENT
   useEffect(() => {
-    // 1. Primary Page Title
     document.title = "IIIT Kota Previous Year Question Papers | Academic Archive Vault";
-
-    // 2. Meta Description
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.name = "description";
-      document.head.appendChild(metaDesc);
-    }
-    metaDesc.setAttribute("content", "Download IIIT Kota Previous Year Question Papers. Access the official Academic Archive for Mid-sem and End-sem papers in CSE, ECE, and IT branches.");
-
-    // 3. Keywords (Helpful for specific academic searches)
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      metaKeywords = document.createElement('meta');
-      metaKeywords.name = "keywords";
-      document.head.appendChild(metaKeywords);
-    }
-    metaKeywords.setAttribute("content", "IIIT Kota, IIIT Kota previous year papers, IIIT Kota exam papers, CSE, ECE, IT, Mid-sem, End-sem, Academic Archive");
-
+    let metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+    metaDesc.name = "description";
+    metaDesc.content = "Download IIIT Kota Previous Year Question Papers. Access the official Academic Archive for Mid-sem and End-sem papers in CSE, ECE, and IT branches.";
+    document.head.appendChild(metaDesc);
   }, []);
 
-  // 2. DATA INITIALIZATION - Fetch metadata and subject mapping
+  // 2. DATA INITIALIZATION (Fetch Years and Subjects)
   useEffect(() => {
     const fetchMetadata = async () => {
-      const dbRef = ref(db);
-      try {
-        const [yearSnap, subjectSnap] = await Promise.all([
-          get(child(dbRef, "verified_vault")),
-          get(child(dbRef, "subjects"))
-        ]);
-
-        if (yearSnap.exists()) {
-          setOptions(prev => ({ ...prev, years: Object.keys(yearSnap.val()) }));
-        }
-        if (subjectSnap.exists()) {
-          setSubjectMap(subjectSnap.val());
-        }
-      } catch (err) {
-        console.error("Initialization Error:", err);
+      // Fetch distinct years from 'papers' table where status is 'verified'
+      const { data: yearData } = await supabase
+        .from('papers')
+        .select('year')
+        .eq('status', 'verified');
+      
+      // Extract unique years
+      if (yearData) {
+        const uniqueYears = [...new Set(yearData.map(item => item.year))].sort().reverse();
+        setOptions(prev => ({ ...prev, years: uniqueYears }));
       }
+
+      // Note: If you store subject mapping in a separate table, fetch it here.
+      // For now, I'll keep subjectMap empty or you can add a 'subjects' table in Supabase later.
+      // const { data: subjectData } = await supabase.from('subjects').select('*');
+      // if (subjectData) ...
     };
     fetchMetadata();
   }, []);
 
-  // 3. SUBJECT LOOKUP LOGIC - Mapping codes to titles
+  // 3. SUBJECT LOOKUP LOGIC
   const getSubjectTitle = (courseCode) => {
-    if (!subjectMap || Object.keys(subjectMap).length === 0) return "Loading Title...";
+    if (!subjectMap || Object.keys(subjectMap).length === 0) return courseCode; // Fallback to code if map empty
     const normalizedCode = courseCode.toUpperCase().trim();
     return subjectMap[normalizedCode] || "General Paper";
   };
 
-  // 4. INSTANT SEARCH FILTERING - Optimizes list rendering
+  // 4. INSTANT SEARCH FILTERING
   const filteredPapers = useMemo(() => {
     if (!papers) return [];
-    return Object.entries(papers).filter(([code, data]) =>
-      code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      getSubjectTitle(code).toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (data.uploadedBy && data.uploadedBy.toLowerCase().includes(searchQuery.toLowerCase()))
+    return papers.filter((paper) =>
+      paper.course_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      getSubjectTitle(paper.course_code).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (paper.uploaded_by && paper.uploaded_by.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }, [papers, searchQuery, subjectMap]);
 
-  // 5. SECURE DOWNLOAD HANDLER
-  const handleDownload = async (fileId, cleanName) => {
-    const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-    setLoading(true);
-    try {
-      const fileRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
-      const fileData = await fileRes.json();
-      if (fileData.ok) {
-        const directUrl = `https://api.telegram.org/file/bot${token}/${fileData.result.file_path}`;
-        const link = document.createElement('a');
-        link.href = directUrl;
-        link.setAttribute('download', cleanName);
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
-    } catch (err) {
-      console.error("Download Error:", err);
-    } finally {
-      setLoading(false);
-    }
+  // 5. SECURE DOWNLOAD HANDLER (Supabase Public URL)
+  const handleDownload = (fileUrl, cleanName) => {
+    if (!fileUrl) return;
+    // Direct open since Supabase URLs are permanent and public
+    window.open(fileUrl, "_blank");
   };
+
+  // --- DROPDOWN LOGIC (Cascading Filters) ---
 
   const handleYearChange = async (year) => {
     setSelection({ year, sem: "", branch: "", examType: "" });
     setPapers(null);
     setCurrentStep(2);
     if (!year) return;
+    
     setLoading(true);
-    const snapshot = await get(child(ref(db), `verified_vault/${year}`));
-    if (snapshot.exists()) setOptions(prev => ({ ...prev, sems: Object.keys(snapshot.val()) }));
+    // Fetch semesters available for this year
+    const { data } = await supabase
+      .from('papers')
+      .select('sem')
+      .eq('status', 'verified')
+      .eq('year', year);
+      
+    if (data) {
+      const uniqueSems = [...new Set(data.map(item => item.sem))].sort();
+      setOptions(prev => ({ ...prev, sems: uniqueSems }));
+    }
     setLoading(false);
   };
 
   const handleSemChange = async (sem) => {
     setSelection(prev => ({ ...prev, sem, branch: "", examType: "" }));
     if (!sem) return;
+
     setLoading(true);
-    const snapshot = await get(child(ref(db), `verified_vault/${selection.year}/${sem}`));
-    if (snapshot.exists()) {
-      setOptions(prev => ({ ...prev, branches: Object.keys(snapshot.val()) }));
+    // Fetch branches available for this year + sem
+    const { data } = await supabase
+      .from('papers')
+      .select('branch')
+      .eq('status', 'verified')
+      .eq('year', selection.year)
+      .eq('sem', sem);
+
+    if (data) {
+      const uniqueBranches = [...new Set(data.map(item => item.branch))].sort();
+      setOptions(prev => ({ ...prev, branches: uniqueBranches }));
       setCurrentStep(3);
     }
     setLoading(false);
@@ -139,32 +126,53 @@ export default function PapersSection() {
   const handleBranchChange = async (branch) => {
     setSelection(prev => ({ ...prev, branch, examType: "" }));
     if (!branch) return;
+
     setLoading(true);
-    const snapshot = await get(child(ref(db), `verified_vault/${selection.year}/${selection.sem}/${branch}`));
-    if (snapshot.exists()) {
-      setOptions(prev => ({ ...prev, examTypes: Object.keys(snapshot.val()) }));
+    // Fetch exam types available for this year + sem + branch
+    const { data } = await supabase
+      .from('papers')
+      .select('exam_type')
+      .eq('status', 'verified')
+      .eq('year', selection.year)
+      .eq('sem', selection.sem)
+      .eq('branch', branch);
+
+    if (data) {
+      const uniqueTypes = [...new Set(data.map(item => item.exam_type))].sort();
+      setOptions(prev => ({ ...prev, examTypes: uniqueTypes }));
       setCurrentStep(4);
     }
     setLoading(false);
   };
 
+  // --- FINAL FETCH ---
   const fetchFinalPapers = async () => {
     setLoading(true);
-    const path = `verified_vault/${selection.year}/${selection.sem}/${selection.branch}/${selection.examType}`;
-    const snapshot = await get(child(ref(db), path));
-    if (snapshot.exists()) {
-      setPapers(snapshot.val());
-      setCurrentStep(5);
+    
+    const { data, error } = await supabase
+      .from('papers')
+      .select('*')
+      .eq('status', 'verified')
+      .eq('year', selection.year)
+      .eq('sem', selection.sem)
+      .eq('branch', selection.branch)
+      .eq('exam_type', selection.examType);
+
+    if (error) {
+      console.error("Error fetching papers:", error);
+      setPapers([]);
     } else {
-      setPapers({});
+      setPapers(data || []);
+      setCurrentStep(5);
     }
+    
     setLoading(false);
   };
 
   return (
     <article className="min-h-screen bg-[#030014] text-white pt-10 pb-20 px-4 sm:px-6 lg:px-8 selection:bg-purple-500/30 font-sans">
 
-      {/* BACKGROUND ORB DECORATION - Fixed layout depth */}
+      {/* BACKGROUND ORB DECORATION */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full animate-pulse" />
@@ -172,7 +180,7 @@ export default function PapersSection() {
 
       <header className="max-w-4xl mx-auto text-center mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/40 border border-purple-500/30 text-purple-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4 shadow-[0_0_20px_rgba(168,85,247,0.15)]">
-          <Archive size={12} className="animate-pulse text-yellow-500"/> Academic Archive Hub
+          <Archive size={12} className="animate-pulse text-yellow-500" /> Academic Archive Hub
         </div>
         <h1 className="text-5xl md:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-gray-400 uppercase leading-tight mb-2">
           ARCHIVE <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-indigo-500">VAULT</span>
@@ -235,7 +243,7 @@ export default function PapersSection() {
         <main className="lg:col-span-8">
           <div className="bg-white/2 border-2 border-dashed border-white/10 rounded-[2.5rem] p-6 sm:p-10 min-h-125 h-full flex flex-col relative overflow-hidden transition-all duration-700 backdrop-blur-sm">
 
-            {papers && Object.keys(papers).length > 0 && (
+            {papers && papers.length > 0 && (
               <div className="mb-8 relative animate-in slide-in-from-top-2 duration-500">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                 <input
@@ -274,10 +282,10 @@ export default function PapersSection() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {filteredPapers.map(([courseCode, data]) => (
+                  {filteredPapers.map((data) => (
                     <button
-                      key={courseCode}
-                      onClick={() => handleDownload(data.telegramFileId, data.name)}
+                      key={data.id}
+                      onClick={() => handleDownload(data.file_url, data.course_code)}
                       className="flex items-center justify-between p-4 bg-[#0b0f2f]/40 border border-white/5 rounded-3xl hover:bg-white/[0.07] hover:border-purple-500/40 hover:translate-y-1 transition-all duration-300 group text-left w-full shadow-lg"
                     >
                       <div className="flex items-center gap-5 min-w-0">
@@ -286,15 +294,15 @@ export default function PapersSection() {
                         </div>
                         <div className="flex flex-col min-w-0">
                           <span className="text-[13px] font-black uppercase text-white group-hover:text-purple-300 leading-tight truncate">
-                            {getSubjectTitle(courseCode)}
+                            {getSubjectTitle(data.course_code)}
                           </span>
                           <div className="mt-1 flex items-center gap-2 overflow-hidden">
-                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest whitespace-nowrap">{courseCode}</span>
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest whitespace-nowrap">{data.course_code}</span>
                             <span className="text-[10px] text-gray-700">•</span>
                             <div className="flex items-center gap-1.5 overflow-hidden">
                               <User size={10} className="text-purple-500 shrink-0" />
                               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate group-hover:text-gray-400 transition-colors">
-                                {data.uploadedBy || "IIIT KOTA HUB"}
+                                {data.uploaded_by || "IIIT KOTA HUB"}
                               </span>
                             </div>
                           </div>

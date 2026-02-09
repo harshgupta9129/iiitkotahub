@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { db } from "../firebase";
-import { ref, push, set } from "firebase/database";
+import { supabase } from "../supabase"; // Updated import
 import {
   Upload, Loader2, FileCheck, Image,
   ChevronLeft, Sparkles, ShieldCheck, User, Code,
@@ -136,7 +135,10 @@ export default function PaperUpload() {
     setLoading(true);
 
     try {
-      const cleanName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.year}_IIITKOTAHUB.pdf`.replace(/\s+/g, "_");
+      // 1. Prepare File Name
+      // Added timestamp to ensure uniqueness in the bucket
+      const timestamp = Date.now();
+      const cleanName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.year}_${timestamp}.pdf`.replace(/\s+/g, "_");
       
       let finalBlob;
       
@@ -153,37 +155,47 @@ export default function PaperUpload() {
         throw new Error(`Processed file exceeds 10MB limit: ${(finalBlob.size / (1024 * 1024)).toFixed(2)}MB`);
       }
 
-      const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-      const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
-
-      const formData = new FormData();
-      formData.append("chat_id", chatId);
-      formData.append("document", finalBlob, cleanName);
-      formData.append("caption", `${cleanName}\n👤 Contributor: ${meta.uploadedBy}`);
-
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { 
-        method: "POST", 
-        body: formData 
-      });
-      const data = await res.json();
-
-      if (data.ok) {
-        await set(push(ref(db, "pending_vault")), {
-          ...meta,
-          name: cleanName,
-          telegramFileId: data.result.document.file_id,
-          telegramMsgId: data.result.message_id,
-          timestamp: Date.now()
+      // 2. Upload to Supabase Storage ('pdfs' bucket)
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('pdfs')
+        .upload(cleanName, finalBlob, {
+          cacheControl: '3600',
+          upsert: false
         });
-        
-        alert("SUBMISSION SUCCESS: Paper Sent For Approval.");
-        setFiles([]);
-        setMeta({ ...meta, courseCode: "", examType: "", sem: "", branch: "" });
-      } else {
-        throw new Error(data.description || "Upload failed");
-      }
+
+      if (uploadError) throw uploadError;
+
+      // 3. Get the Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('pdfs')
+        .getPublicUrl(cleanName);
+
+      // 4. Insert Metadata into Supabase Database ('papers' table)
+      const { error: dbError } = await supabase
+        .from('papers')
+        .insert([
+          {
+            title: meta.courseCode, // Or any title logic you prefer
+            course_code: meta.courseCode,
+            year: meta.year,
+            sem: meta.sem,
+            branch: meta.branch,
+            exam_type: meta.examType,
+            file_url: publicUrl,
+            uploaded_by: meta.uploadedBy,
+            status: 'pending' // Defaults to pending
+          }
+        ]);
+
+      if (dbError) throw dbError;
+      
+      alert("SUBMISSION SUCCESS: Paper Sent For Approval.");
+      setFiles([]);
+      setMeta({ ...meta, courseCode: "", examType: "", sem: "", branch: "" });
+
     } catch (err) {
-      setError(err.message || "UPLOAD ERROR: File might be too large or connection timed out.");
+      console.error(err);
+      setError(err.message || "UPLOAD ERROR: Connection failed or file too large.");
     } finally {
       setLoading(false);
     }
@@ -292,7 +304,7 @@ export default function PaperUpload() {
               className="w-full py-6.5 bg-linear-to-br from-purple-600 to-indigo-600 rounded-4xl font-black uppercase text-[11px] tracking-[0.4em] transition-all hover:shadow-2xl hover:scale-[1.01] active:scale-[0.98] disabled:opacity-20 flex items-center justify-center gap-4 relative overflow-hidden group/btn"
             >
               {loading ? (
-                <><Loader2 className="animate-spin" size={20} /><span>PROCESSING HIGH QUALITY...</span></>
+                <><Loader2 className="animate-spin" size={20} /><span>UPLOADING TO VAULT...</span></>
               ) : (
                 <><ShieldCheck size={20} /><span>SUBMIT TO VAULT</span></>
               )}

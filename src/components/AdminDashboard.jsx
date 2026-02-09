@@ -1,82 +1,108 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "../firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-import { ref, onValue, set, remove } from "firebase/database";
+import { supabase } from "../supabase"; // Updated import
 import { Trash2, LogOut, Loader2, CheckCircle, ExternalLink, User, Calendar, BookOpen, ShieldCheck } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState([]);
   const [creds, setCreds] = useState({ email: "", password: "" });
 
+  // 1. Check Login Status (Supabase Auth)
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
       setLoading(false);
     });
-    return () => unsub();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch Pending Papers
+  // 2. Fetch Pending Papers (Supabase Query)
   useEffect(() => {
-    if (!user) return;
-    const pendingRef = ref(db, "pending_vault");
-    return onValue(pendingRef, (snap) => {
-      if (snap.exists()) {
-        const data = snap.val();
-        const list = Object.entries(data).map(([id, values]) => ({
-          id,
-          ...values,
-        }));
-        // Sort by newest first
-        setPending(list.sort((a, b) => b.timestamp - a.timestamp));
-      } else {
-        setPending([]);
-      }
-    });
-  }, [user]);
+    if (!session) return;
 
-  const handlePreview = async (fileId) => {
-    const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
-      const data = await res.json();
-      if (data.ok) {
-        const directUrl = `https://api.telegram.org/file/bot${token}/${data.result.file_path}`;
-        window.open(directUrl, "_blank");
+    const fetchPending = async () => {
+      // Fetch only papers where status is 'pending'
+      const { data, error } = await supabase
+        .from('papers')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Error fetching papers:", error);
       } else {
-        alert("Telegram error: " + data.description);
+        setPending(data || []);
       }
-    } catch (err) {
-      alert("Failed to retrieve preview link.");
+    };
+
+    fetchPending();
+  }, [session]);
+
+  // 3. Handle File Preview (Direct URL from Supabase)
+  const handlePreview = (fileUrl) => {
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      alert("Error: No file URL found.");
     }
   };
 
+  // 4. Handle Login
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, creds.email, creds.password);
-    } catch (err) {
-      alert("Access Denied: Invalid Credentials");
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email: creds.email,
+      password: creds.password,
+    });
+    if (error) alert("Access Denied: " + error.message);
   };
 
+  // 5. Approve Logic (Update status to 'verified')
   const approve = async (p) => {
-    const vPath = `verified_vault/${p.year}/${p.sem}/${p.branch}/${p.examType}/${p.courseCode}`;
     try {
-      await set(ref(db, vPath), {
-        name: p.name,
-        telegramFileId: p.telegramFileId,
-        telegramMsgId: p.telegramMsgId,
-        uploadedBy: p.uploadedBy || "Anonymous",
-        timestamp: Date.now()
-      });
-      await remove(ref(db, `pending_vault/${p.id}`));
+      const { error } = await supabase
+        .from('papers')
+        .update({ status: 'verified' })
+        .eq('id', p.id);
+
+      if (error) throw error;
+
+      // Update UI instantly
+      setPending(pending.filter(item => item.id !== p.id));
       alert("Paper Approved and Moved to Verified Vault!");
     } catch (err) {
       alert("Approval failed: " + err.message);
     }
+  };
+
+  // 6. Delete Logic (Permanent Remove)
+  const handleDelete = async (id) => {
+    if (!window.confirm("Permanent Deletion? This cannot be undone.")) return;
+
+    try {
+      const { error } = await supabase
+        .from('papers')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Update UI instantly
+      setPending(pending.filter(item => item.id !== id));
+    } catch (err) {
+      alert("Deletion failed: " + err.message);
+    }
+  };
+
+  // 7. Logout Logic
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
   if (loading) return (
@@ -85,7 +111,7 @@ export default function AdminDashboard() {
     </div>
   );
 
-  if (!user) return (
+  if (!session) return (
     <div className="h-screen flex items-center justify-center bg-[#030014] p-4 text-white relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
@@ -133,7 +159,7 @@ export default function AdminDashboard() {
             <p className="text-gray-500 text-xs font-bold uppercase tracking-[0.3em]">Pending Verification Queue</p>
           </div>
           <button
-            onClick={() => signOut(auth)}
+            onClick={handleLogout}
             className="flex items-center gap-2 px-8 py-3 bg-red-600/10 text-red-500 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-600 hover:text-white transition-all border border-red-600/20"
           >
             <LogOut size={16} /> Logout Session
@@ -153,12 +179,12 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex justify-between items-start mb-6">
                     <span className="bg-purple-600/20 border border-purple-500/30 px-4 py-1.5 rounded-xl text-[11px] font-black uppercase text-purple-400 tracking-wider">
-                      {p.courseCode}
+                      {p.course_code}
                     </span>
                     <button
-                      onClick={() => handlePreview(p.telegramFileId)}
+                      onClick={() => handlePreview(p.file_url)}
                       className="p-2 bg-white/5 rounded-xl text-gray-400 hover:text-white hover:bg-purple-600 transition-all shadow-inner"
-                      title="Preview Telegram Document"
+                      title="Preview Document"
                     >
                       <ExternalLink size={20} />
                     </button>
@@ -167,11 +193,12 @@ export default function AdminDashboard() {
                   <div className="space-y-4 mb-8">
                     <div className="flex items-center gap-3 text-gray-400">
                         <Calendar size={16} className="text-purple-500" />
+                        {/* Note: using p.sem, p.year etc matching SQL columns */}
                         <span className="text-xs font-bold uppercase tracking-widest">{p.year} • SEM {p.sem}</span>
                     </div>
                     <div className="flex items-center gap-3 text-gray-400">
                         <BookOpen size={16} className="text-purple-500" />
-                        <span className="text-xs font-bold uppercase tracking-widest">{p.branch} • {p.examType}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest">{p.branch} • {p.exam_type}</span>
                     </div>
                     {/* UPLOADED BY SECTION */}
                     <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5">
@@ -179,7 +206,7 @@ export default function AdminDashboard() {
                         <div>
                             <p className="text-[8px] uppercase text-gray-500 font-black tracking-widest">Contributed By</p>
                             <p className="text-[11px] font-black uppercase text-white truncate max-w-37.5">
-                                {p.uploadedBy || "IIIT KOTA HUB"}
+                                {p.uploaded_by || "IIIT KOTA HUB"}
                             </p>
                         </div>
                     </div>
@@ -194,11 +221,7 @@ export default function AdminDashboard() {
                     Approve
                   </button>
                   <button
-                    onClick={() => {
-                        if(window.confirm("Permanent Deletion? This cannot be undone.")) {
-                            remove(ref(db, `pending_vault/${p.id}`));
-                        }
-                    }}
+                    onClick={() => handleDelete(p.id)}
                     className="p-4 bg-white/5 text-gray-500 hover:text-white hover:bg-red-600 rounded-2xl transition-all group-hover:border-red-600/30"
                   >
                     <Trash2 size={18} />
