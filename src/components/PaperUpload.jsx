@@ -138,7 +138,7 @@ export default function PaperUpload() {
     try {
       // 2. GENERATE STANDARDIZED NAME
       // Format: CST101_CSE_1_2025_IIITKOTAHUB.pdf (Always Uppercase)
-      const standardizedName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.year}_IIITKOTAHUB.pdf`.toUpperCase();
+      const standardizedName = `${meta.courseCode}_${meta.branch}_${meta.sem}_${meta.examType}_${meta.year}_IIITKOTAHUB.pdf`.toUpperCase();
 
       let finalBlob;
 
