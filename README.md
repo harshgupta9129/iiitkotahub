@@ -41,7 +41,7 @@
 - Structured filters by **Year → Semester → Branch → Exam Type**
 
 ### 📊 Live Analytics
-- Tracks real-time engagement using **Firebase Realtime Database**
+- Tracks real-time engagement using **SupaBase Realtime Database**
 - Measures platform reach and student adoption
 
 ### 🎨 Premium UI/UX
@@ -71,7 +71,7 @@
 |-------------|------------|
 | **Frontend** | React.js 19, Vite, Tailwind CSS |
 | **Animations** | Framer Motion |
-| **Backend / DB** | Firebase Realtime Database, Telegram |
+| **Backend / DB** | Supabase Realtime Database, Supabase Storage |
 | **Icons** | Lucide React |
 | **Hosting** | Vercel |
 
@@ -102,41 +102,14 @@ npm install
 Create a `.env.local` file in the root directory:
 
 ```env
-# Firebase Config
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=iiitkota-a82bd.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=iiitkota-a82bd
-VITE_FIREBASE_STORAGE_BUCKET=iiitkota-a82bd.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-VITE_FIREBASE_DATABASE_URL=https://iiitkota-a82bd-default-rtdb.asia-southeast1.firebasedatabase.app
-
-# Telegram Config
-VITE_TELEGRAM_BOT_TOKEN=bot_token
-VITE_TELEGRAM_CHAT_ID=chat_id
+# Supabase Config
+VITE_SUPABASE_URL=Your Supabase Url
+VITE_SUPABASE_ANON_KEY=Your Supabase Anon Key
 ```
 
 ### 4️⃣ Run Development Server
 ```bash
 npm run dev
-```
-## 📊 Database Structure (Firebase)
-```json
-{
-  "totalHubViews": 0,
-  "papers": {
-    "Year": {
-      "Semester": {
-        "Branch": {
-          "ExamType": {
-            "Subject_Name": "Direct_Download_URL"
-          }
-        }
-      }
-    }
-  }
-}
 ```
 ## 🤝 Contributing
 
